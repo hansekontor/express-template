@@ -28,7 +28,8 @@ module.exports = async (ws, req) => {
             try {
                 console.log('received: ', message)
                 ws.send('echo: ' + message)
-                clearPoll(polling)
+                // Uncomment this line to disconnect on response
+                // clearPoll(polling)
             } catch (err) {
                 await handleWsError(err, ws, signal)
             }
