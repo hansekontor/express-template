@@ -8,29 +8,34 @@ require('dotenv').config();
 var app = require('../app');
 var debug = require('debug')('express-project:server');
 var https = require('https');
+var http = require('http');
 var fs = require('fs')
 const path = require('path');
 const WebSocket = require('ws');
 const wsController = require('../controllers/wsController')
 
-/**
- * Get port from environment and store in Express.
- */
+/*
+ * Create Server
+*/
+const nodeEnv = process.env.NODE_ENV;
+const isDeveloperMode = nodeEnv === "development" || nodeEnv === "haproxy";
 
-var port = normalizePort(process.env.HTTPS_PORT || '3000');
 var httpPort = normalizePort(process.env.HTTP_PORT || '8000');
+var httpsPort = normalizePort(process.env.HTTPS_PORT || '3000');
+var port = isDeveloperMode ? httpPort : httpsPort;
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
-const httpsOptions = {
-  key: fs.readFileSync(path.resolve(__dirname, '../certs/' + process.env.X509_KEY)),
-  cert: fs.readFileSync(path.resolve(__dirname, '../certs/' + process.env.X509_CERT))
+let server;
+if (isDeveloperMode) {
+  server = http.createServer(app)
+} else {
+  const httpsOptions = {
+    key: fs.readFileSync(process.env.SSL_PRIVKEY),
+    cert: fs.readFileSync(process.env.SSL_FULLCHAIN)
+  };  
+  server = https.createServer(httpsOptions, app);
 }
 
-var server = https.createServer(httpsOptions, app);
 
 /**
  * Handle Websocket Connections
@@ -52,16 +57,16 @@ console.log("Starting Express Server")
  * Redirect GET from http to https
  */
 
-var http = require('http');
-http.createServer(function (req, res) {
-  try {
-    let host = req.headers['host'].split(':')
-    res.writeHead(307, { "Location": "https://" + host[0] +":"+ port + req.url });
-  } catch (err) {
-    res.writeHead(307, { "Location": "https://" + process.env.HOSTNAME });
-  }
-    res.end();
-}).listen(httpPort);
+// var http = require('http');
+// http.createServer(function (req, res) {
+//   try {
+//     let host = req.headers['host'].split(':')
+//     res.writeHead(307, { "Location": "https://" + host[0] +":"+ port + req.url });
+//   } catch (err) {
+//     res.writeHead(307, { "Location": "https://" + process.env.HOSTNAME });
+//   }
+//     res.end();
+// }).listen(httpPort);
 
 /**
  * Normalize a port into a number, string, or false.

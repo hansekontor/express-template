@@ -2,11 +2,9 @@ NODE_ENV = development
 
 HOSTNAME = localhost
 
-#Place files in /certs directory
-X509_CERT = localhost.crt
-X509_KEY = localhost.key
+SSL_PRIVKEY = /etc/letsencrypt/live/yourdomain/privkey.pem
+SSL_FULLCHAIN = /etc/letsencrypt/live/yourdomain/fullchain.pem
 
-#PORT is HTTPS, HTTP_PORT is HTTP
 #If commented out, defaults to HTTP: 8000, HTTPS: 3000
 #HTTPS_PORT = 443
 #HTTP_PORT = 80
