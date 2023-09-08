@@ -1,0 +1,39 @@
+<head>
+    <script type="text/javascript" src="https://dev.cert.cash:8332/checkout-v0.1.js"></script>
+    <!-- <script type="text/javascript" src="zoid-component.js"></script> -->
+</head>
+<body style="background-color:#fffff">
+    <h3>Merchant Domain Checkout</h3>
+    <button id="popupCheckout" class="btn btn-primary">Checkout</button>
+    <div id="container"></div>	
+    <div id="result"></div>
+
+    <script>
+     document.querySelector('#popupCheckout').addEventListener('click', function () {
+      document.querySelector('#popupCheckout').style.display = 'none';
+
+       // Render the component
+       CheckoutZoidComponent({ 
+         //paymentUrl: "https://pay.badger.cash/i/ANKE3",
+         paymentRequest: {
+           customer_id: "9777323f923b85cdaabee216b251ed42fc3e0de978aa2091dd5dbbdf5ce180c3",
+           amount: 5,
+           merchant_name: "Zoid Checkout Merchant",
+         },
+         onSuccess: function(link) {
+           console.log("Success, link:", link);
+           //document.getElementById("container").setAttribute("hidden", "true");
+           document.getElementById("result").innerHTML = `Payment successful, <a href="${link}" target="_blank">click here to see transaction</a>`;
+         },
+         onCancel: function() {
+           console.log("payment canceled");
+           //document.getElementById("container").setAttribute("hidden", "true");
+           document.getElementById("result").innerHTML = "Payment has been canceled";
+         }
+       }).render('');
+
+     });
+    </script>
+
+</body>
+
